@@ -1,0 +1,3 @@
+Turbo Arena — código original generado para este proyecto.
+Puedes modificarlo y publicarlo en tu repositorio.
+No incluye contenido propietario de car-soccer.com.

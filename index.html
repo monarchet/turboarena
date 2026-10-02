@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+  <title>Turbo Arena — Car Soccer</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <canvas id="game"></canvas>
+
+  <div id="menu" class="overlay">
+    <div class="panel">
+      <div class="eyebrow">TURBO ARENA</div>
+      <h1>CAR SOCCER</h1>
+      <p>Fútbol de coches arcade en navegador.</p>
+      <div class="buttons">
+        <button id="play">JUGAR</button>
+        <button id="how">CONTROLES</button>
+      </div>
+      <div class="small">Versión independiente · sin descarga</div>
+    </div>
+  </div>
+
+  <div id="help" class="overlay hidden">
+    <div class="panel compact">
+      <h2>Controles</h2>
+      <div class="keys">
+        <span><b>W / ↑</b> acelerar</span>
+        <span><b>S / ↓</b> frenar / reversa</span>
+        <span><b>A / D</b> girar</span>
+        <span><b>ESPACIO</b> salto / doble salto</span>
+        <span><b>SHIFT</b> turbo</span>
+        <span><b>R</b> recolocar coche</span>
+        <span><b>ESC</b> pausa</span>
+      </div>
+      <button id="back">VOLVER</button>
+    </div>
+  </div>
+
+  <div id="pause" class="overlay hidden">
+    <div class="panel compact">
+      <h2>PAUSA</h2>
+      <button id="resume">CONTINUAR</button>
+      <button id="restart">REINICIAR</button>
+      <button id="quit">MENÚ</button>
+    </div>
+  </div>
+
+  <div id="hud" class="hidden">
+    <div class="top">
+      <div class="team blue">AZUL <b id="blueScore">0</b></div>
+      <div class="clock" id="clock">2:00</div>
+      <div class="team orange"><b id="orangeScore">0</b> NARANJA</div>
+    </div>
+    <div class="boost">
+      <span>TURBO</span>
+      <div class="bar"><i id="boostBar"></i></div>
+      <b id="boostText">100</b>
+    </div>
+    <div class="hint">WASD · ESPACIO · SHIFT · ESC</div>
+  </div>
+
+  <div id="goal" class="goal hidden">
+    <div id="goalText">¡GOL!</div>
+  </div>
+
+  <div id="mobile" class="hidden">
+    <div id="stick"><div id="knob"></div></div>
+    <button id="jumpBtn">↑</button>
+    <button id="boostBtn">BOOST</button>
+  </div>
+
+  <script src="game.js"></script>
+</body>
+</html>
