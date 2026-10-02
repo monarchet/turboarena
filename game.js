@@ -43,7 +43,7 @@ function model(pos,scale,rot=[0,0,0]){
 let VP=ident(m4());
 function draw(me,mo,c){gl.bindBuffer(gl.ARRAY_BUFFER,me.p);gl.vertexAttribPointer(L.p,3,gl.FLOAT,false,0,0);gl.enableVertexAttribArray(L.p);gl.bindBuffer(gl.ARRAY_BUFFER,me.n);gl.vertexAttribPointer(L.n,3,gl.FLOAT,false,0,0);gl.enableVertexAttribArray(L.n);gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,me.i);gl.uniformMatrix4fv(L.m,false,mo);gl.uniformMatrix4fv(L.mvp,false,mul4(VP,mo));gl.uniform4f(L.color,c[0],c[1],c[2],1);gl.drawElements(gl.TRIANGLES,me.count,gl.UNSIGNED_SHORT,0)}
 
-const FIELD_X=62,FIELD_Z=38,WALL_H=8,GOAL_W=16,GOAL_H=7,BALL_R=1.65;
+const FIELD_X=52,FIELD_Z=78,WALL_H=9,GOAL_W=16,GOAL_H=7,BALL_R=1.65;
 const keys={},mouse={l:false,r:false};
 addEventListener('keydown',e=>{keys[e.code]=true;if(['Space','ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.code))e.preventDefault();if(e.code==='Escape')pauseGame();if(e.code==='KeyR'&&state.mode==='free')resetBall()});
 addEventListener('keyup',e=>keys[e.code]=false);
@@ -57,7 +57,7 @@ let state={mode:'menu',paused:false,time:120,score:[0,0],count:0,goalCooldown:0,
 
 class Car{
  constructor(team){this.team=team;this.ai=team===1;this.reset()}
- reset(){this.pos=this.team===0?[-18,1.25,0]:[18,1.25,0];this.vel=[0,0,0];this.yaw=this.team===0?Math.PI/2:-Math.PI/2;this.pitch=0;this.roll=0;this.ground=true;this.jumps=0;this.boost=100;this.boosting=false;this.jumpLatch=false}
+ reset(){this.pos=this.team===0?[0,1.25,-25]:[0,1.25,25];this.vel=[0,0,0];this.yaw=this.team===0?0:Math.PI;this.pitch=0;this.roll=0;this.ground=true;this.jumps=0;this.boost=100;this.boosting=false;this.jumpLatch=false}
  forward(){return forwardYaw(this.yaw)}
  update(dt){this.ai?this.aiMove(dt):this.playerMove(dt)}
  playerMove(dt){
@@ -74,7 +74,7 @@ class Car{
    const max=this.boosting?34:24,hs=Math.hypot(this.vel[0],this.vel[2]);if(hs>max){this.vel[0]*=max/hs;this.vel[2]*=max/hs}
   }else{
    this.yaw+=s*1.8*dt;this.pitch+=(-f)*1.65*dt;
-   const roll=(keys.KeyE?1:0)-(keys.KeyQ?1:0);if(roll)this.roll+=roll*6.2*dt;
+   const roll=(keys.KeyE?1:0)-(keys.KeyQ?1:0);if(roll)this.roll+=roll*7.4*dt;
    if(keys.ShiftLeft||keys.ShiftRight)this.roll+=(-s)*3.5*dt;
    this.pitch*=.996;this.roll*=.996;this.vel[1]-=24*dt;
   }
@@ -125,18 +125,18 @@ function ballPhysics(dt){
 function score(team){state.score[team]++;state.goalCooldown=2.3;document.getElementById('message').textContent='GOAL';setTimeout(()=>{if(state.mode!=='menu')document.getElementById('message').textContent=''},1100);resetPositions()}
 function goalCheck(){
  if(state.goalCooldown>0)return;
- if(Math.abs(ball.pos[2])<GOAL_W/2 && ball.pos[1]<GOAL_H && ball.pos[0]<-FIELD_X/2+1)score(1);
- else if(Math.abs(ball.pos[2])<GOAL_W/2 && ball.pos[1]<GOAL_H && ball.pos[0]>FIELD_X/2-1)score(0);
+ if(Math.abs(ball.pos[0])<GOAL_W/2 && ball.pos[1]<GOAL_H && ball.pos[2]<-FIELD_Z/2+1.5)score(1);
+ else if(Math.abs(ball.pos[0])<GOAL_W/2 && ball.pos[1]<GOAL_H && ball.pos[2]>FIELD_Z/2-1.5)score(0);
 }
 
 function carDraw(c,base){
  const fw=c.forward(),right=[fw[2],0,-fw[0]],r=[c.pitch,c.yaw,c.roll];
  // soft ground shadow
  if(c.ground)draw(M.sphere,model([c.pos[0],.045,c.pos[2]],[2.25,.025,1.05]),[.015,.025,.02]);
- draw(M.cube,model(c.pos,[2.25,.55,1.05],r),base);
- draw(M.cube,model(V.add(c.pos,[0,.48,0]),[1.35,.34,.86],r),[base[0]*.55+.08,base[1]*.55+.08,base[2]*.55+.08]);
+ draw(M.cube,model(c.pos,[2.0,.50,1.02],r),base);
+ draw(M.cube,model(V.add(c.pos,[0,.48,0]),[1.12,.34,.78],r),[base[0]*.55+.08,base[1]*.55+.08,base[2]*.55+.08]);
  draw(M.cube,model(V.add(c.pos,V.mul(fw,1.95)),[.20,.32,.92],r),[.85,.88,.92]);
- draw(M.cube,model(V.add(c.pos,V.mul(fw,-1.55)),[.15,.45,.82],r),[.03,.04,.05]);
+ draw(M.cube,model(V.add(c.pos,V.mul(fw,-1.55)),[.16,.38,.84],r),[.03,.04,.05]);
  // windows
  draw(M.cube,model(V.add(c.pos,V.add([0,.73,0],V.mul(fw,.05))),[.78,.08,.65],r),[.04,.09,.13]);
  // spoiler
@@ -152,47 +152,58 @@ function carDraw(c,base){
 
 function line(x,z,sx,sz,col){draw(M.cube,model([x,.055,z],[sx,.035,sz]),col)}
 function drawGoal(side){
- const gx=side*(FIELD_X/2-2.0), blue=side<0?[.25,.58,1]:[1,.38,.12];
- for(const z of [-GOAL_W/2,GOAL_W/2])draw(M.cube,model([gx,GOAL_H/2,z],[2.0,.15,.15]),blue);
- draw(M.cube,model([gx,GOAL_H,0],[2.0,.15,GOAL_W/2]),blue);
- // net strips
- for(let z=-GOAL_W/2;z<=GOAL_W/2;z+=1.5)draw(M.cube,model([gx+side*1.7,GOAL_H/2,z],[.03,GOAL_H/2,.025]),[.7,.75,.8]);
- for(let y=1;y<GOAL_H;y+=1.4)draw(M.cube,model([gx+side*1.7,y,0],[.03,.025,GOAL_W/2]),[.7,.75,.8]);
+ const gz=side*(FIELD_Z/2-2.0), blue=side<0?[.20,.55,1]:[1,.34,.10];
+ // Goal mouth/frame, oriented across the width of the pitch.
+ for(const x of [-GOAL_W/2,GOAL_W/2])draw(M.cube,model([x,GOAL_H/2,gz],[.15,GOAL_H/2,2.0]),blue);
+ draw(M.cube,model([0,GOAL_H,gz],[GOAL_W/2,.15,2.0]),blue);
+ // Back net and roof/side net strips.
+ const back=gz+side*1.8;
+ for(let x=-GOAL_W/2;x<=GOAL_W/2;x+=1.25)draw(M.cube,model([x,GOAL_H/2,back],[.025,GOAL_H/2,.025]),[.72,.76,.82]);
+ for(let y=1;y<GOAL_H;y+=1.15)draw(M.cube,model([0,y,back],[GOAL_W/2,.025,.025]),[.72,.76,.82]);
+ for(const x of [-GOAL_W/2,GOAL_W/2])for(let y=1;y<GOAL_H;y+=1.15)draw(M.cube,model([x,y,gz+side*.9],[.025,.025,.9]),[.72,.76,.82]);
 }
 function drawStands(){
  const tiers=[[-FIELD_X/2-5,0],[FIELD_X/2+5,0],[0,-FIELD_Z/2-5],[0,FIELD_Z/2+5]];
  for(const [x,z] of tiers){
-  const along=Math.abs(x)>1?FIELD_Z:FIELD_X;
-  for(let k=-along/2;k<=along/2;k+=2.5){
-   const px=Math.abs(x)>1?x:k,pz=Math.abs(x)>1?k:z;
-   draw(M.cube,model([px,2.4,pz],[Math.abs(x)>1?3.0:1.4,2.4,Math.abs(x)>1?1.4:3.0]),[.035,.09,.16]);
-   for(let row=0;row<4;row++)draw(M.cube,model([px,4.9+row*.8,pz],[Math.abs(x)>1?3.0:1.4,.25,Math.abs(x)>1?1.4:3.0]),row%2?[.07,.13,.2]:[.08,.18,.28]);
+  const side=Math.abs(x)>1;
+  const span=side?FIELD_Z:FIELD_X;
+  for(let k=-span/2;k<=span/2;k+=2.5){
+   const px=side?x:k,pz=side?k:z;
+   const sx=side?3.0:1.4, sz=side?1.4:3.0;
+   draw(M.cube,model([px,2.4,pz],[sx,2.4,sz]),[.035,.09,.16]);
+   for(let row=0;row<5;row++)draw(M.cube,model([px,4.9+row*.8,pz],[sx,.25,sz]),row%2?[.07,.13,.2]:[.08,.18,.28]);
   }
+ }
+ // A roof ring and floodlight towers give the camera a stadium feel without covering the sky.
+ for(const x of [-FIELD_X/2-7,FIELD_X/2+7])for(const z of [-FIELD_Z/2-6,FIELD_Z/2+6]){
+  draw(M.cube,model([x,10,z],[.22,10,.22]),[.10,.12,.15]);
+  draw(M.cube,model([x,19,z],[1.0,.12,1.0]),[.82,.84,.88]);
  }
 }
 function drawField(){
+ // Wide football pitch with the goals directly ahead/behind the player.
  draw(M.cube,model([0,-.35,0],[FIELD_X/2,.35,FIELD_Z/2]),[.08,.48,.16]);
- // darker side apron
  draw(M.cube,model([0,-.02,-FIELD_Z/2-.8],[FIELD_X/2,.08,.8]),[.025,.06,.08]);
  draw(M.cube,model([0,-.02,FIELD_Z/2+.8],[FIELD_X/2,.08,.8]),[.025,.06,.08]);
- // field markings, axis is X
- line(0,0,.08,FIELD_Z/2-.4,[.92,.95,.92]);
+ // Markings: long axis is Z.
+ line(0,0,.06,FIELD_Z/2-.4,[.92,.95,.92]);
  draw(M.cyl,model([0,.06,0],[7.2,.04,7.2]),[.92,.95,.92]);
- line(-FIELD_X/4,0,.06,FIELD_Z/2-.4,[.92,.95,.92]);line(FIELD_X/4,0,.06,FIELD_Z/2-.4,[.92,.95,.92]);
- // side lines
- line(0,-FIELD_Z/2+.25,FIELD_X/2-.25,.06,[.92,.95,.92]);line(0,FIELD_Z/2-.25,FIELD_X/2-.25,.06,[.92,.95,.92]);
- // penalty boxes
+ line(0,-FIELD_Z/4,FIELD_X/2-.4,.06,[.92,.95,.92]);
+ line(0, FIELD_Z/4,FIELD_X/2-.4,.06,[.92,.95,.92]);
+ line(-FIELD_X/2+.25,0,.06,FIELD_Z/2-.25,[.92,.95,.92]);
+ line( FIELD_X/2-.25,0,.06,FIELD_Z/2-.25,[.92,.95,.92]);
  for(const side of [-1,1]){
-  const x=side*(FIELD_X/2-10);
-  line(x,0,.06,8,[.92,.95,.92]);
-  line(side*(FIELD_X/2-20),-8,.06,4,[.92,.95,.92]);line(side*(FIELD_X/2-20),8,.06,4,[.92,.95,.92]);
-  line(side*(FIELD_X/2-16),-8,3.5,.06,[.92,.95,.92]);line(side*(FIELD_X/2-16),8,3.5,.06,[.92,.95,.92]);
+  const z=side*(FIELD_Z/2-10);
+  line(0,z,GOAL_W/2+.5,.06,[.92,.95,.92]);
+  line(-GOAL_W/2-.5,z,.06,8,[.92,.95,.92]);
+  line( GOAL_W/2+.5,z,.06,8,[.92,.95,.92]);
+  line(0,side*(FIELD_Z/2-20),GOAL_W/2+.5,.06,[.92,.95,.92]);
  }
- // walls
+ // Transparent-looking arena walls made from dark rails; the pitch remains visually open.
  draw(M.cube,model([0,WALL_H/2,-FIELD_Z/2-.35],[FIELD_X/2,WALL_H/2,.35]),[.025,.07,.10]);
- draw(M.cube,model([0,WALL_H/2,FIELD_Z/2+.35],[FIELD_X/2,WALL_H/2,.35]),[.025,.07,.10]);
+ draw(M.cube,model([0,WALL_H/2, FIELD_Z/2+.35],[FIELD_X/2,WALL_H/2,.35]),[.025,.07,.10]);
  draw(M.cube,model([-FIELD_X/2-.35,WALL_H/2,0],[.35,WALL_H/2,FIELD_Z/2]),[.025,.07,.10]);
- draw(M.cube,model([FIELD_X/2+.35,WALL_H/2,0],[.35,WALL_H/2,FIELD_Z/2]),[.025,.07,.10]);
+ draw(M.cube,model([ FIELD_X/2+.35,WALL_H/2,0],[.35,WALL_H/2,FIELD_Z/2]),[.025,.07,.10]);
  drawGoal(-1);drawGoal(1);drawStands();
 }
 function drawBall(){
@@ -202,16 +213,25 @@ function drawBall(){
  for(const q of patches){const n=V.norm(q),p=V.add(ball.pos,V.mul(n,BALL_R*.92));draw(M.sphere,model(p,[.25,.25,.25]),[.03,.035,.04])}
 }
 
-let cam=[-25,3.1,0],camTar=[0,1,0],last=performance.now();
+let cam=[0,3.0,-33],camTar=[0,1.1,-15],last=performance.now();
 function render(dt){
- gl.viewport(0,0,canvas.width,canvas.height);gl.enable(gl.DEPTH_TEST);gl.clearColor(.06,.27,.48,1);gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
- const asp=canvas.width/canvas.height,p=perspective(.92,asp,.1,220),fw=player.forward();
+ gl.viewport(0,0,canvas.width,canvas.height);gl.enable(gl.DEPTH_TEST);
+ gl.clearColor(.30,.62,.88,1);gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
+ const asp=canvas.width/canvas.height,p=perspective(.80,asp,.08,260),fw=player.forward();
  let desired,target;
- if(state.ballCam){desired=V.add(player.pos,V.add(V.mul(fw,-7.2),[0,3.0,0]));target=V.lerp(player.pos,ball.pos,.55)}
- else {desired=V.add(player.pos,V.add(V.mul(fw,-7.0),[0,2.65,0]));target=V.add(player.pos,V.add(V.mul(fw,8.5),[0,.9,0]));}
- cam=V.lerp(cam,desired,1-Math.pow(.0008,dt));camTar=V.lerp(camTar,target,1-Math.pow(.0008,dt));
- VP=mul4(p,lookAt(cam,camTar,[0,1,0]));gl.uniform3fv(L.light,[-.45,1,.55]);
- drawField();drawBall();carDraw(player,[.12,.48,.95]);carDraw(bot,[.95,.25,.08]);
+ // Low, close chase camera: the car fills the lower part of the image and the ball/field dominate ahead.
+ if(state.ballCam){
+   desired=V.add(player.pos,V.add(V.mul(fw,-5.6),[0,2.25,0]));
+   target=V.lerp(V.add(player.pos,V.mul(fw,4)),ball.pos,.62);
+ } else {
+   desired=V.add(player.pos,V.add(V.mul(fw,-6.2),[0,2.35,0]));
+   target=V.add(player.pos,V.add(V.mul(fw,11.5),[0,1.05,0]));
+ }
+ cam=V.lerp(cam,desired,1-Math.pow(.00008,dt));
+ camTar=V.lerp(camTar,target,1-Math.pow(.00008,dt));
+ VP=mul4(p,lookAt(cam,camTar,[0,1,0]));
+ gl.uniform3fv(L.light,[-.35,1.0,.55]);
+ drawField();drawBall();carDraw(player,[.10,.42,.95]);carDraw(bot,[.95,.22,.07]);
 }
 function updateHUD(){
  document.getElementById('blueScore').textContent=state.score[0];document.getElementById('orangeScore').textContent=state.score[1];
