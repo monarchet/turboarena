@@ -1,63 +1,68 @@
 <!doctype html>
 <html lang="es">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>Turbo Arena V2</title>
-<link rel="stylesheet" href="style.css">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Turbo Arena — Solo</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<canvas id="gl"></canvas>
-<div id="menu" class="screen">
-  <div class="menuCard">
-    <div class="brand">TURBO ARENA</div>
-    <h1>CAR<br>SOCCER</h1>
-    <p class="sub">Arcade car football · browser edition</p>
-    <div class="modeRow">
-      <button class="mode active" data-mode="solo">SOLO 1V1</button>
-      <button class="mode" data-mode="free">FREE PLAY</button>
+  <main id="app">
+    <canvas id="game" aria-label="Turbo Arena"></canvas>
+
+    <section id="menu" class="screen">
+      <div class="panel">
+        <div class="brand">TURBO <span>ARENA</span></div>
+        <p class="sub">CAR SOCCER · SOLO</p>
+        <button id="playBtn" class="primary">JUGAR 1V1</button>
+        <button id="freeBtn">FREE PLAY</button>
+        <button id="controlsBtn">CONTROLES</button>
+        <div class="small">Partidas de 2:00 · Tú contra la IA</div>
+      </div>
+    </section>
+
+    <section id="controls" class="screen hidden">
+      <div class="panel">
+        <h2>CONTROLES</h2>
+        <div class="keys">
+          <div><b>W / S</b><span>Acelerar / frenar</span></div>
+          <div><b>A / D</b><span>Girar</span></div>
+          <div><b>ESPACIO</b><span>Salto / doble salto</span></div>
+          <div><b>SHIFT</b><span>Derrape</span></div>
+          <div><b>CLICK IZQ.</b><span>Turbo</span></div>
+          <div><b>CLICK DER.</b><span>Cámara del balón</span></div>
+          <div><b>ESC</b><span>Pausa</span></div>
+        </div>
+        <button id="backBtn">VOLVER</button>
+      </div>
+    </section>
+
+    <section id="pause" class="screen hidden">
+      <div class="panel">
+        <h2>PAUSA</h2>
+        <button id="resumeBtn" class="primary">CONTINUAR</button>
+        <button id="restartBtn">REINICIAR</button>
+        <button id="menuBtn">MENÚ</button>
+      </div>
+    </section>
+
+    <section id="finish" class="screen hidden">
+      <div class="panel">
+        <h2 id="finishTitle">FIN DEL PARTIDO</h2>
+        <div id="finishScore" class="finish-score">0 — 0</div>
+        <button id="againBtn" class="primary">JUGAR DE NUEVO</button>
+        <button id="finishMenuBtn">MENÚ</button>
+      </div>
+    </section>
+
+    <div id="hud" class="hidden">
+      <div class="score"><span id="blueScore">0</span><i>:</i><span id="orangeScore">0</span></div>
+      <div id="timer">2:00</div>
+      <div class="boost"><span>TURBO</span><div><b id="boostBar"></b></div></div>
+      <div id="camLabel">CÁMARA: COCHE</div>
     </div>
-    <button id="play" class="primary">PLAY</button>
-    <button id="controls" class="secondary">CONTROLS</button>
-    <div class="note">Independent implementation — no original game files.</div>
-  </div>
-</div>
-
-<div id="controlsPanel" class="screen hidden">
-  <div class="menuCard smallCard">
-    <div class="brand">CONTROLS</div>
-    <div class="controlGrid">
-      <span>W / S</span><b>Drive / reverse</b>
-      <span>A / D</span><b>Steer</b>
-      <span>Left mouse</span><b>Boost</b>
-      <span>Right mouse</span><b>Jump</b>
-      <span>Shift</span><b>Powerslide / air roll</b>
-      <span>Space</span><b>Ball camera</b>
-      <span>R</span><b>Reset car</b>
-      <span>Esc</span><b>Pause</b>
-    </div>
-    <button id="closeControls" class="secondary">BACK</button>
-  </div>
-</div>
-
-<div id="pause" class="screen hidden">
-  <div class="menuCard smallCard">
-    <div class="brand">PAUSED</div>
-    <button id="resume" class="primary">RESUME</button>
-    <button id="restart" class="secondary">RESTART</button>
-    <button id="menuBtn" class="secondary">MENU</button>
-  </div>
-</div>
-
-<div id="hud" class="hidden">
-  <div class="score blue"><small>BLUE</small><strong id="bs">0</strong></div>
-  <div class="time" id="time">2:00</div>
-  <div class="score orange"><strong id="os">0</strong><small>ORANGE</small></div>
-  <div class="boostBox"><span>BOOST</span><div><i id="boost"></i></div></div>
-  <div class="cam">SPACE · BALL CAM</div>
-</div>
-<div id="banner" class="hidden"></div>
-<div id="crosshair" class="hidden">+</div>
-<script src="game.js"></script>
+    <div id="hint" class="hidden">WASD · ESPACIO · SHIFT · CLICK IZQ.</div>
+  </main>
+  <script src="game.js"></script>
 </body>
 </html>
