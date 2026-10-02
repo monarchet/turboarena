@@ -1,42 +1,34 @@
-# Turbo Arena — Car Soccer
+# Turbo Arena V2
 
-Juego de fútbol de coches para navegador, desarrollado desde cero y pensado para GitHub Pages.
+Una implementación independiente de car soccer para navegador, pensada para GitHub Pages.
 
-## Incluye
-- Partido 1v1 contra IA
-- Física arcade de coche y balón
-- Boost regenerable
-- Salto y doble salto
-- Colisiones coche-balón y coche-coche
-- Porterías, goles y reinicio de saque
-- Marcador y partido de 2 minutos
-- Prórroga/fin de partido simplificado
-- Cámara en tercera persona
-- Controles táctiles básicos
-- Sin backend ni instalación
+## Lo que incluye V2
+- Renderizado 3D WebGL sin dependencias externas.
+- Campo con paredes, porterías y cámara en tercera persona.
+- Solo 1v1 contra bot.
+- Free Play sin reloj.
+- 2 minutos en Solo + overtime si hay empate.
+- Drive/reverse y steering con física arcade.
+- Boost con regeneración.
+- Jump / segundo salto.
+- Powerslide básico.
+- Ball cam.
+- Menú y panel de controles.
+- Compatible con GitHub Pages sin servidor.
 
 ## Controles
-WASD / flechas = conducir
-ESPACIO = salto / doble salto
-SHIFT = boost
-R = recolocar
-ESC = pausa
+W/S: acelerar/reversa
+A/D: dirección
+Click izquierdo: boost
+Click derecho: salto
+Shift: powerslide
+Space: ball cam
+R: recolocar
+Esc: pausa
 
-## Publicar en GitHub Pages
-1. Crea un repositorio público, por ejemplo `turbo-arena`.
-2. Sube `index.html`, `style.css`, `game.js` y la carpeta `assets`.
-3. En GitHub abre Settings → Pages.
-4. En "Build and deployment" selecciona "Deploy from a branch".
-5. Elige `main` y `/ (root)`.
-6. Guarda.
-7. Espera a que GitHub publique la página.
+## Importante sobre multijugador
+GitHub Pages solo sirve archivos estáticos. Un multijugador online real con salas 1v1/2v2/3v3 necesita un servicio de señalización/backend (por ejemplo WebSocket/WebRTC + servidor). Esta V2 deja preparado el juego local; no finge que las salas online existan cuando no hay backend.
 
-La URL será normalmente:
-https://TU-USUARIO.github.io/turbo-arena/
-
-## Google Sites
-En Google Sites puedes insertar la URL publicada mediante Insertar → Insertar/Embed → URL.
-Si tu cuenta de centro no permite incrustar una web externa, usa un botón/enlace a la URL de GitHub Pages.
-
-## Nota
-Es una implementación independiente. No contiene código, modelos, imágenes, sonidos ni archivos propietarios de car-soccer.com.
+## Publicar
+Sube index.html, style.css y game.js a la raíz de tu repositorio.
+GitHub Settings -> Pages -> Deploy from a branch -> main -> / (root).
